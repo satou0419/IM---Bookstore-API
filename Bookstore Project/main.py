@@ -2,11 +2,13 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
+# Change this to your username:password@localhost:port/db name
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:%40Rdgg0419@localhost:3306/dbbook'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-class Book(db.Model):
+class Books(db.Model):
     BookID = db.Column(db.Integer, primary_key=True)
     Title = db.Column(db.String(255), nullable=False)
     Author = db.Column(db.String(100), nullable=False)
@@ -24,7 +26,7 @@ def index():
 # Define a route to get all books
 @app.route('/books', methods=['GET'])
 def get_books():
-    books = Book.query.all()
+    books = Books.query.all()
     result = [{'Title': book.Title, 'Author': book.Author, 'Price': book.Price} for book in books]
     return jsonify(result)
 
@@ -36,7 +38,7 @@ def add_book():
     author = data.get('Author')
     price = data.get('Price')
 
-    new_book = Book(Title=title, Author=author, Price=price)
+    new_book = Books(Title=title, Author=author, Price=price)
     db.session.add(new_book)
     db.session.commit()
 
