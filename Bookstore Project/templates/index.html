@@ -1,17 +1,249 @@
-from flask import Flask, jsonify, request from flask_sqlalchemy import
-SQLAlchemy app = Flask(__name__) app.config['SQLALCHEMY_DATABASE_URI'] =
-'mysql+pymysql://root:root@localhost/dbbookstore'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False db = SQLAlchemy(app) class
-Book(db.Model): BookID = db.Column(db.Integer, primary_key=True) Title =
-db.Column(db.String(255), nullable=False) Author = db.Column(db.String(100),
-nullable=False) Price = db.Column(db.Float, nullable=False) # Create tables with
-app.app_context(): db.create_all() # Define a route for the root URL
-@app.route('/') def index(): return 'Welcome to the Bookstore API!' # Define a
-route to get all books @app.route('/books', methods=['GET']) def get_books():
-books = Book.query.all() result = [{'Title': book.Title, 'Author': book.Author,
-'Price': book.Price} for book in books] return jsonify(result) # Define a route
-to add a new book @app.route('/books', methods=['POST']) def add_book(): data =
-request.json title = data.get('Title') author = data.get('Author') price =
-data.get('Price') new_book = Book(Title=title, Author=author, Price=price)
-db.session.add(new_book) db.session.commit() return jsonify({'message': 'Book
-added successfully!'}) if __name__ == '__main__': app.run(debug=True)
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookstore</title>
+  </head>
+  <body>
+    <h1>Bookstore</h1>
+
+    <h2>Add a Book</h2>
+    <form id="bookForm">
+      <label for="title">Title:</label>
+      <input type="text" id="title" required />
+
+      <label for="author">Author:</label>
+      <input type="text" id="author" required />
+
+      <label for="price">Price:</label>
+      <input type="number" id="price" step="0.01" required />
+
+      <button type="button" onclick="addBook()">Add Book</button>
+    </form>
+
+    <!-- Add a search box for book titles -->
+    <h2>Search Books</h2>
+    <input
+      type="text"
+      id="searchTitle"
+      placeholder="Search by Title"
+      oninput="searchBooks()"
+    />
+
+    <!-- Add a dropdown list for updating books -->
+    <h2>Update Book</h2>
+    <select id="updateTitleList" onchange="loadBookDetails()">
+      <!-- Options will be dynamically added using JavaScript -->
+    </select>
+
+    <!-- Add input fields for new title, author, and price -->
+    <label for="newTitle">New Title:</label>
+    <input type="text" id="newTitle" required />
+
+    <label for="newAuthor">New Author:</label>
+    <input type="text" id="newAuthor" required />
+
+    <label for="newPrice">New Price:</label>
+    <input type="number" id="newPrice" step="0.01" required />
+
+    <button type="button" onclick="updateBook()">Update Book</button>
+
+    <h2>Books</h2>
+    <ul id="bookList"></ul>
+
+    <!-- Add a dropdown list for deleting books -->
+    <h2>Delete Book</h2>
+    <select id="deleteTitleList">
+      <!-- Options will be dynamically added using JavaScript -->
+    </select>
+
+    <button type="button" onclick="deleteBook()">Delete Book</button>
+
+    <script>
+      // Function to add a book
+      function addBook() {
+        var title = document.getElementById("title").value;
+        var author = document.getElementById("author").value;
+        var price = document.getElementById("price").value;
+
+        fetch("/books", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ Title: title, Author: author, Price: price }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert(data.message);
+            loadBooks();
+            loadBookTitles(); // Update the dropdown list after adding a book
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Function to load book titles into the dropdown list
+      function loadBookTitles() {
+        fetch("/books")
+          .then((response) => response.json())
+          .then((data) => {
+            var updateTitleList = document.getElementById("updateTitleList");
+            var deleteTitleList = document.getElementById("deleteTitleList");
+
+            updateTitleList.innerHTML = ""; // Clear existing options
+            deleteTitleList.innerHTML = ""; // Clear existing options
+
+            data.forEach((book) => {
+              // Add option to the update and delete dropdown lists
+              var updateOption = document.createElement("option");
+              var deleteOption = document.createElement("option");
+
+              updateOption.value = deleteOption.value = book.Title;
+              updateOption.text = deleteOption.text = book.Title;
+
+              updateTitleList.appendChild(updateOption);
+              deleteTitleList.appendChild(deleteOption);
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Function to load book details when a title is selected
+      function loadBookDetails() {
+        var selectedTitle = document.getElementById("updateTitleList").value;
+        fetch("/books")
+          .then((response) => response.json())
+          .then((data) => {
+            var selectedBook = data.find(
+              (book) => book.Title === selectedTitle
+            );
+            if (selectedBook) {
+              // Load details into input fields
+              document.getElementById("newTitle").value = selectedBook.Title;
+              document.getElementById("newAuthor").value = selectedBook.Author;
+              document.getElementById("newPrice").value = selectedBook.Price;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Function to update a book
+      function updateBook() {
+        var newTitle = document.getElementById("newTitle").value;
+        var newAuthor = document.getElementById("newAuthor").value;
+        var newPrice = document.getElementById("newPrice").value;
+
+        // Check if a title is selected
+        var selectedTitle = document.getElementById("updateTitleList").value;
+        if (!selectedTitle) {
+          alert("Please select a book to update.");
+          return;
+        }
+
+        fetch(`/books/${selectedTitle}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Title: newTitle,
+            Author: newAuthor,
+            Price: newPrice,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert(data.message);
+            loadBooks();
+            loadBookTitles(); // Update the dropdown list after updating a book
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Function to delete a book
+      function deleteBook() {
+        // Get the selected book title from the dropdown
+        var selectedTitle = document.getElementById("deleteTitleList").value;
+
+        // Check if a title is selected
+        if (!selectedTitle) {
+          alert("Please select a book to delete.");
+          return;
+        }
+
+        fetch(`/books/${selectedTitle}`, {
+          method: "DELETE",
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert(data.message);
+            loadBooks();
+            loadBookTitles(); // Update the dropdown list after deleting a book
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Function to search for books by title
+      function searchBooks() {
+        var searchTitle = document
+          .getElementById("searchTitle")
+          .value.toLowerCase();
+
+        fetch("/books")
+          .then((response) => response.json())
+          .then((data) => {
+            var bookList = document.getElementById("bookList");
+            bookList.innerHTML = "";
+            data.forEach((book) => {
+              // Check if the title contains the search text
+              if (book.Title.toLowerCase().includes(searchTitle)) {
+                var listItem = document.createElement("li");
+                listItem.innerHTML = `<strong>${book.Title}</strong> by ${book.Author}, $${book.Price}`;
+                listItem.dataset.title = book.Title; // Set the title as a data attribute
+                bookList.appendChild(listItem);
+              }
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Function to load books when the page is loaded
+      function loadBooks() {
+        fetch("/books")
+          .then((response) => response.json())
+          .then((data) => {
+            var bookList = document.getElementById("bookList");
+            bookList.innerHTML = "";
+            data.forEach((book) => {
+              var listItem = document.createElement("li");
+              listItem.innerHTML = `<strong>${book.Title}</strong> by ${book.Author}, $${book.Price}`;
+              listItem.dataset.title = book.Title; // Set the title as a data attribute
+              bookList.appendChild(listItem);
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Load books and book titles when the page is loaded
+      window.onload = function () {
+        loadBooks();
+        loadBookTitles();
+      };
+    </script>
+  </body>
+</html>

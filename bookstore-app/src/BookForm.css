@@ -1,0 +1,148 @@
+body {
+  background-color: #f1f0e8;
+}
+.book--container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* public/fonts/Kapakana.ttf */
+@font-face {
+  font-family: "Kapakana";
+  src: url("Kapakana.ttf") format("truetype");
+}
+
+.book--container h1 {
+  color: #555555;
+  font-weight: 500;
+  font-family: "Kapakana";
+  font-size: 80pt;
+  margin: 0;
+  margin-top: 20px;
+}
+.content--container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 80%;
+  gap: 2rem;
+  justify-content: center;
+  padding: 2px 100px;
+  border: 1px solid green;
+}
+.left--container {
+  background-color: #96b6c5;
+  width: 350px;
+  height: 80%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.input--field {
+  width: 250px;
+  background-color: transparent;
+  border-style: none;
+  border-bottom: 2px solid #fff7d4;
+  color: #444444;
+  outline: none;
+  padding-left: 20px;
+}
+
+.input--field::placeholder {
+  color: 555555;
+}
+
+.right--container {
+  background-color: #9bb8cd;
+  height: 80%;
+  flex-grow: 1;
+}
+
+.push--top {
+  margin-top: 50px;
+  position: relative;
+}
+
+.push--down {
+  margin-top: 45px;
+  position: relative;
+}
+
+.icon {
+  color: #eee0c9;
+  position: absolute;
+}
+
+.btn--field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  margin-top: 100px;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  width: 280px;
+  height: 30px;
+  border-style: none;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.btn--add {
+  background-color: #adc4ce;
+}
+
+.btn--update {
+  background-color: #f1f0e8;
+}
+
+/* Add these styles to your existing CSS */
+.book-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.book-table th,
+.book-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.table-row .delete-icon {
+  visibility: hidden;
+}
+
+.table-row:hover .delete-icon {
+  visibility: visible;
+}
+
+nav {
+  height: 50px;
+  width: 100%;
+  background-color: #ccc;
+  display: flex;
+  justify-content: baseline;
+}
+ul {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+li {
+  list-style: none;
+}
