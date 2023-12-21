@@ -1,0 +1,12 @@
+nav {
+  margin-bottom: 30px;
+}
+
+li {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

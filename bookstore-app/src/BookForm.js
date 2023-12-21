@@ -57,7 +57,7 @@ const BookForm = () => {
   };
 
   const addBook = () => {
-    fetch("http://localhost:5000/books", {
+    fetch("http://localhost:5000/books-view", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -81,12 +81,12 @@ const BookForm = () => {
   };
 
   const updateBook = () => {
-    if (!selectedBook) {
+    if (!selectedBook || !selectedBook.BookID) {
       alert("Please select a book to update.");
       return;
     }
 
-    fetch(`http://localhost:5000/books/${selectedBook.Title}`, {
+    fetch(`http://localhost:5000/books/${selectedBook.BookID}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -95,6 +95,7 @@ const BookForm = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("Update Book Response:", data);
         alert(data.message);
         loadBooks();
         setNewBook({
@@ -112,7 +113,7 @@ const BookForm = () => {
 
   const deleteBook = (book) => {
     if (window.confirm(`Are you sure you want to delete "${book.Title}"?`)) {
-      fetch(`http://localhost:5000/books/${book.Title}`, {
+      fetch(`http://localhost:5000/books/${book.BookID}`, {
         method: "DELETE",
       })
         .then((response) => response.json())
@@ -180,13 +181,6 @@ const BookForm = () => {
 
   return (
     <>
-      <nav>
-        <ul>
-          <li>Books</li>
-          <li>Categories</li>
-          <li>Audit Trail</li>
-        </ul>
-      </nav>
       <section className="book--container">
         <h1>Bookstore</h1>
         <div className="content--container">
