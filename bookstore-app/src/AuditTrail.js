@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./AuditTrail.css";
 
+// ... (other imports and code)
+
 export default function AuditTrail() {
   const [originalEntries, setOriginalEntries] = useState([]);
   const [filteredEntries, setFilteredEntries] = useState([]);
 
   const loadAuditTrail = () => {
-    fetch("http://localhost:5000/audit-trail-view")
+    fetch("http://localhost:5000/audit-logs")
       .then((response) => response.json())
       .then((data) => {
         console.log("Audit Trail data:", data);
@@ -58,11 +60,11 @@ export default function AuditTrail() {
             <tbody>
               {filteredEntries.map((entry, index) => (
                 <tr key={index}>
-                  <td>{entry.AuditID}</td>
+                  <td>{entry.ID}</td>
                   <td>{entry.Message}</td>
-                  <td>{entry.ObjectType}</td>
-                  <td>{entry.ObjectID}</td>
-                  <td>{entry.Timestamp}</td>
+                  <td>{entry["Object Type"]}</td>
+                  <td>{entry["Object ID"]}</td>
+                  <td>{entry.Date}</td>
                 </tr>
               ))}
             </tbody>

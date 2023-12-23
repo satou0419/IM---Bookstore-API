@@ -14,6 +14,7 @@ import CategoryList from "./CategoryList";
 
 function App() {
   return (
+    // <CreateCategory />
     <Router>
       <Routes>
         <Route path="/" element={<Navigation />}>

@@ -33,7 +33,7 @@ const BookForm = () => {
   }, [books]);
 
   const loadBooks = () => {
-    fetch("http://localhost:5000/books")
+    fetch("http://localhost:5000/books") // Update the endpoint to fetch data from the BookView
       .then((response) => response.json())
       .then((data) => {
         console.log("Books data:", data);
@@ -57,7 +57,7 @@ const BookForm = () => {
   };
 
   const addBook = () => {
-    fetch("http://localhost:5000/books-view", {
+    fetch("http://localhost:5000/books", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

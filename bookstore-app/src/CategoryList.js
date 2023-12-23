@@ -30,7 +30,7 @@ export default function CategoryList() {
     <section className="book--container">
       <h1>Category List</h1>
 
-      <div className="category--container">
+      <div className="categorylist--container">
         <div className="right--container">
           <div className="icon--field">
             <input
